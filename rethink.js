@@ -230,6 +230,15 @@ class RethinkDB extends Connector {
 			if (typeof models === 'string') {
 				models = [models];
 			}
+			
+			r.dbList().contains(_this.database)
+        .do(function(databaseExists) {
+          return r.branch(
+            databaseExists,
+            { dbs_created: 0 },
+            r.dbCreate(_this.database)
+          );
+      }).run(_this.db);
 
 			models = models || Object.keys(_this._models);
 
